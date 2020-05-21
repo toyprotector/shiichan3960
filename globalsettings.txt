@@ -1,5 +1,5 @@
 forumname=Wille zur Macht
-urltoforum=http://localhost:8080/
+urltoforum=http://willezurmacht.herokuapp.com/
 encoding=utf8
 skin=boston
 image=
