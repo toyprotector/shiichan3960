@@ -1,4 +1,4 @@
-forumname=Breakthrough Society
+forumname=Wille zur Macht
 urltoforum=http://localhost:8080/
 encoding=utf8
 skin=boston

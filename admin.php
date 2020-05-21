@@ -13,9 +13,9 @@ h1 { border: 2px solid #faf; background: #fdf; font-size: medium }</style>
 // Login screen
 function login($why) { $mesg=""; if ($why != 0) { setcookie ("adminname", "",
 time() - 3600); setcookie ("adminpass","",time() - 3600); }
-switch($why) { case 1: $mesg = "Bad password"; continue;
-                case 2: $mesg = "Bad username"; continue;
-		case 3: $mesg = "Success"; continue; } ?>
+switch($why) { case 1: $mesg = "Bad password"; break;
+                case 2: $mesg = "Bad username"; break;
+		case 3: $mesg = "Success"; break; } ?>
 <style type="text/css">img { float:right } * { font-family: Tahoma,sans-serif }
 th { border: 2px solid #faf; background: #fdf } input { border: 2px solid #aaf; 
 background: #ddf } td[colspan="2"] { text-align: right }</style>
@@ -28,22 +28,22 @@ background: #ddf } td[colspan="2"] { text-align: right }</style>
 // Check for login submission
 if (!is_file("shadow.cgi")) { $q= fopen("shadow.cgi", "w"); fputs($q, "admin5<>c21f969b5f03d33d43e04f8f136e7682<>9999\n"); chmod("shadow.cgi", 0700); fclose($q); }
 $admin = file("shadow.cgi");
-if ($_POST[adminname]) $_COOKIE[adminname] = strtolower($_POST[adminname]);
-if ($_POST[adminpass]) $_COOKIE[adminpass] = md5($_POST[adminpass]);
-if (!$_COOKIE[adminname]) { login(0); } $loggedin = false;
+if ($_POST['adminname']) $_COOKIE['adminname'] = strtolower($_POST['adminname']);
+if ($_POST['adminpass']) $_COOKIE['adminpass'] = md5($_POST['adminpass']);
+if (!$_COOKIE['adminname']) { login(0); } $loggedin = false;
 // Check password
 foreach ($admin as $line) { list($name, $pass, $level) = explode("<>", $line);
-if ($_COOKIE[adminname] == $name) { if ($_COOKIE[adminpass] != $pass) login(1);
+if ($_COOKIE['adminname'] == $name) { if ($_COOKIE['adminpass'] != $pass) login(1);
 $loggedin = true; $mylevel = rtrim($level); }} if ($loggedin == false) login(2);
 // Logged in
-if ($_POST[adminname]) { setcookie ("adminname", $_COOKIE[adminname]);
-setcookie ("adminpass", $_COOKIE[adminpass]); }
+if ($_POST['adminname']) { setcookie ("adminname", $_COOKIE['adminname']);
+setcookie ("adminpass", $_COOKIE['adminpass']); }
 
 
 ################################################################################
 // Okay, are we changing something?
 if(get_magic_quotes_gpc()) $_POST = array_map("stripslashes", $_POST);
-switch ($_POST[action]) {  case "newadmin":
+switch ($_POST['action']) {  case "newadmin":
 // making a new account
 if ($mylevel < 9000) fancydie("You don't have permission for that.");
 if (!$_POST[password]) fancydie("Blank password == a no-no.");
@@ -281,7 +281,7 @@ foreach ($glob as $tmp){  $tmp = trim($tmp);   list ($name, $value) = explode("=
 $local = @file("$_POST[bbs]/localsettings.txt");
 if ($local) { foreach ($local as $tmp){  $tmp = trim($tmp);   list ($name, $value) = explode("=", $tmp);  $setting[$name] = $value;  } }
 require "include.php";
-RebuildThreadList($_POST[bbs], $_POST[dat], true, true);
+RebuildThreadList($_POST['bbs'], $_POST['dat'], true, true);
 ?>
 <meta http-equiv="refresh" content="0;admin.php?task=rebuild&bbs=<?=$_POST[bbs]?>">
 Thread was deleted successfully.
@@ -304,10 +304,10 @@ fclose($k);
 
 ################################################################################
 // Okay, we're printing out some stuff.
-switch ($_GET[task]) {
+switch ($_GET['task']) {
 default: // Admin panel	?>
 <link rel="stylesheet" href="admin.css"><h1>Registered User Options Panel</h1>
-<img src="logo.png">Welcome, <b><?=$_COOKIE[adminname]?></b>.
+<img src="logo.png">Welcome, <b><?=$_COOKIE['adminname']?></b>.
 Your current e-penis size is <b><?=$mylevel?>cm (<?php
      if ($mylevel == 9999) echo "<span style='color:red'>Webmaster</span>";
 else if ($mylevel >= 9000) echo "Operator";
@@ -482,9 +482,9 @@ foreach ($global as $tmp){ /*tmlspecialquotes($tmp);*/ $tmp = trim($tmp);   list
 } ?><link rel="stylesheet" href="admin.css"><h1>Change Global Settings</h1>
 <img src="logo.png"><a href="admin.php">Back to Admin Panel</a><p><?=$mesg?>
 <form action="admin.php" method="POST"><h2>Basic Settings</h2>
-Forum name: <input name="forumname" value="<?=$SETTING[forumname]?>" size="50">
-<br>URL to forum: <input name="urltoforum" value="<?=$SETTING[urltoforum]?>" size="50"> (include trailing /)
-<br> <?php if($SETTING[encoding]) echo "Your default character encoding is $SETTING[encoding] and it is unwise to change that.<input type='hidden' name='encoding' value='$SETTING[encoding]'>"; else echo "Character encoding: <select name='encoding'><option value='utf8'>UTF-8 (recommended)<option value='sjis'>Shift-JIS</select> (Once you set this, you can't change it)"; ?>
+Forum name: <input name="forumname" value="<?=$SETTING['forumname']?>" size="50">
+<br>URL to forum: <input name="urltoforum" value="<?=$SETTING['urltoforum']?>" size="50"> (include trailing /)
+<br> <?php if($SETTING['encoding']) echo "Your default character encoding is $SETTING[encoding] and it is unwise to change that.<input type='hidden' name='encoding' value='$SETTING[encoding]'>"; else echo "Character encoding: <select name='encoding'><option value='utf8'>UTF-8 (recommended)<option value='sjis'>Shift-JIS</select> (Once you set this, you can't change it)"; ?>
 <h2>Styles</h2>
 Skin: <select name="skin"><?php 
 $board = array(); $dir = opendir('skin');
@@ -496,19 +496,19 @@ foreach ($board as $tmp) { $name = file_get_contents("skin/$tmp/name.txt");
 if ($SETTING[skin] == $tmp) echo "<option value='$tmp' selected>$name</option>";
 else echo "<option value='$tmp'>$name</option>"; } ?></select>
 <h2>Default names</h2>
-Untitled board name: <input name="boardname" value="<?=$SETTING[boardname]?>">
-<br>Default nickname: <input name="nameless" value="<?=$SETTING[nameless]?>">
-<br>Default aborn: <input name="aborn" value="<?=$SETTING[aborn]?>">
+Untitled board name: <input name="boardname" value="<?=$SETTING['boardname']?>">
+<br>Default nickname: <input name="nameless" value="<?=$SETTING['nameless']?>">
+<br>Default aborn: <input name="aborn" value="<?=$SETTING['aborn']?>">
 <h2>Boring things</h2>
-Maximum number of replies: <input name="maxres" value="<?=$SETTING[maxres]?>" size="5">
-<br>Hash IP and display it next to post: <input type="checkbox" name="haship" <?=$SETTING[haship]?>
-<br>Enable post icons: <input type="checkbox" name="posticons" <?=$SETTING[posticons]?>
-<br>Add a Name field to the reply box (for use on small forums): <input type="checkbox" name="namefield" <?=$SETTING[namefield]?>>
-<br>Posts per page: <input name="postsperpage" value="<?=$SETTING[postsperpage]?>" size="5">
-<br>Threads displayed on front page: <input name="fpthreads" value="<?=$SETTING[fpthreads]?>" size="5">
-<br>Posts displayed on front page threads (not including first post): <input name="fpposts" value="<?=$SETTING[fpposts]?>" size="5">
-<br>Lines displayed on front page threads: <input name="fplines" value="<?=$SETTING[fplines]?>" size="5">
-<br>Additional threads linked in front page table: <input name="additionalthreads" value="<?=$SETTING[additionalthreads]?>" size="5">
+Maximum number of replies: <input name="maxres" value="<?=$SETTING['maxres']?>" size="5">
+<br>Hash IP and display it next to post: <input type="checkbox" name="haship" <?=$SETTING['haship']?>
+<br>Enable post icons: <input type="checkbox" name="posticons" <?=$SETTING['posticons']?>
+<br>Add a Name field to the reply box (for use on small forums): <input type="checkbox" name="namefield" <?=$SETTING['namefield']?>>
+<br>Posts per page: <input name="postsperpage" value="<?=$SETTING['postsperpage']?>" size="5">
+<br>Threads displayed on front page: <input name="fpthreads" value="<?=$SETTING['fpthreads']?>" size="5">
+<br>Posts displayed on front page threads (not including first post): <input name="fpposts" value="<?=$SETTING['fpposts']?>" size="5">
+<br>Lines displayed on front page threads: <input name="fplines" value="<?=$SETTING['fplines']?>" size="5">
+<br>Additional threads linked in front page table: <input name="additionalthreads" value="<?=$SETTING['additionalthreads']?>" size="5">
 <input type="hidden" name="action" value="savesettings">
 <p><input type="submit" value="Save Settings"></form>
 <?php exit; case "rebuild":
@@ -519,9 +519,9 @@ foreach ($glob as $tmp){  $tmp = trim($tmp);   list ($name, $value) = explode("=
 $local = @file("$_GET[bbs]/localsettings.txt");
 if ($local) { foreach ($local as $tmp){  $tmp = trim($tmp);   list ($name, $value) = explode("=", $tmp);  $setting[$name] = $value;  } }
 require "include.php";
-RebuildThreadList($_GET[bbs], 1, true, false);
+RebuildThreadList($_GET['bbs'], 1, true, false);
 ?><link rel="stylesheet" href="admin.css">
-<meta http-equiv='refresh' content='1;<?=$setting[urltoforum]?><?=$_GET[bbs]?>/'>
+<meta http-equiv='refresh' content='1;<?=$setting['urltoforum']?><?=$_GET['bbs']?>/'>
 In a few seconds, I'll take you over to the front page...<p><a href="admin.php">Back to Admin Panel</a>
 <?php exit; case "createboard":
 if ($mylevel < 8000) fancydie("You don't have clearance for that."); ?>
@@ -550,8 +550,8 @@ while (false !== ($file = readdir($handle))) {
 }
 closedir($handle);
 $top = file_get_contents("skin/$setting[skin]/forumstop.txt");
-      $top = str_replace("<%FORUMNAME%>", $setting[forumname], $top);
-       $top = str_replace("<%FORUMURL%>", $setting[urltoforum], $top);
+      $top = str_replace("<%FORUMNAME%>", $setting['forumname'], $top);
+       $top = str_replace("<%FORUMURL%>", $setting['urltoforum'], $top);
 fputs($index, $top);
 if (!$board) fputs($index, "<dt>No boards :(</dt>");
 else foreach ($board as $thus) {
@@ -581,19 +581,19 @@ if ($mylevel < 4900) fancydie("no soup for you"); if (!$_GET[bbs]) fancydie("hea
 <p><a href="admin.php">Back to Admin Panel</a>
 <?php exit; case "settings":
 if ($mylevel < 5000) fancydie("You don't have clearance for that.");
-if (!$_GET[bbs]) fancydie("No BBS selected?!");
+if (!$_GET['bbs']) fancydie("No BBS selected?!");
 $local = file("$_GET[bbs]/localsettings.txt");
 if ($local) {
 $local = array_map("htmlspecialchars", $local);
 foreach ($local as $tmp){ $tmp = trim($tmp);   list ($name, $value) = explode("=", $tmp); if ($value == "on") $value = "checked"; $SETTING[$name] = $value; }
 }
 ?>
-<link rel="stylesheet" href="admin.css"><h1>Change Forum Settings for /<?=$_GET[bbs]?>/</h1>
+<link rel="stylesheet" href="admin.css"><h1>Change Forum Settings for /<?=$_GET['bbs']?>/</h1>
 <img src="logo.png"><a href="admin.php">Back to Admin Panel</a><p>
 <b>All settings filled in here will OVERRIDE global settings.</b>
 <form action="admin.php" method="POST">
 <h2>Basic Stuff</h2>
-<?php if($SETTING[encoding]) echo "Your default character encoding is $SETTING[encoding] and it is unwise to change that.<input type='hidden' name='encoding' value='$SETTING[encoding]'>"; else echo "Character encoding: <select name='encoding'><option value=''>Don't override default<option value='utf8'>UTF-8 (recommended)<option value='sjis'>Shift-JIS</select> (Once you set this, you can't change it)"; ?><br>
+<?php if($SETTING['encoding']) echo "Your default character encoding is $SETTING[encoding] and it is unwise to change that.<input type='hidden' name='encoding' value='$SETTING[encoding]'>"; else echo "Character encoding: <select name='encoding'><option value=''>Don't override default<option value='utf8'>UTF-8 (recommended)<option value='sjis'>Shift-JIS</select> (Once you set this, you can't change it)"; ?><br>
 Skin: <select name="skin"><?php 
 $board = array(); $dir = opendir('skin');
 while (false !==($file = readdir($dir))) { if($file != '.' && $file != '..') {
@@ -602,34 +602,34 @@ closedir($dir); // list all skins
 if ($board == array()) fancydie("</select>No skins?!");
 foreach ($board as $tmp) { $name = file_get_contents("skin/$tmp/name.txt");
 if ($SETTING[skin] == $tmp) echo "<option value='$tmp' selected>$name</option>";
-else echo "<option value='$tmp'>$name</option>"; } ?></select> (Override?) <input name="overrideskin" <?=$SETTING[overrideskin]?> type="checkbox">
-<br>Board name: <input name="boardname" value="<?=$SETTING[boardname]?>">
-<br>Threads can only be started by admins? <input name="adminsonly" <?=$SETTING[adminsonly]?> type="checkbox">
+else echo "<option value='$tmp'>$name</option>"; } ?></select> (Override?) <input name="overrideskin" <?=$SETTING['overrideskin']?> type="checkbox">
+<br>Board name: <input name="boardname" value="<?=$SETTING['boardname']?>">
+<br>Threads can only be started by admins? <input name="adminsonly" <?=$SETTING['adminsonly']?> type="checkbox">
 <h2>Default names</h2>
-<br>Default nickname: <input name="nameless" value="<?=$SETTING[nameless]?>">
-<br>Default aborn: <input name="aborn" value="<?=$SETTING[aborn]?>">
+<br>Default nickname: <input name="nameless" value="<?=$SETTING['nameless']?>">
+<br>Default aborn: <input name="aborn" value="<?=$SETTING['aborn']?>">
 <h2>Boring things</h2>
-Maximum number of replies: <input name="maxres" value="<?=$SETTING[maxres]?>" size="5">
-<br>Hash IP and display it next to post: <input type="checkbox" name="haship" <?=$SETTING[haship]?>> (Override?) <input name="overrideip" <?=$SETTING[overrideip]?> type="checkbox"> 
-<br>Add a Name field to the reply box (for use on small forums): <input type="checkbox" name="namefield" <?=$SETTING[namefield]?>> (Override?) <input name="overridename" <?=$SETTING[overridename]?> type="checkbox"> 
-<br>Posts per page: <input name="postsperpage" value="<?=$SETTING[postsperpage]?>" size="5">
-<br>Threads displayed on front page: <input name="fpthreads" value="<?=$SETTING[fpthreads]?>" size="5">
-<br>Posts displayed on front page threads (not including first post): <input name="fpposts" value="<?=$SETTING[fpposts]?>" size="5">
-<br>Lines displayed on front page threads: <input name="fplines" value="<?=$SETTING[fplines]?>" size="5">
-<br>Additional threads linked in front page table: <input name="additionalthreads" value="<?=$SETTING[additionalthreads]?>" size="5">
+Maximum number of replies: <input name="maxres" value="<?=$SETTING['maxres']?>" size="5">
+<br>Hash IP and display it next to post: <input type="checkbox" name="haship" <?=$SETTING['haship']?>> (Override?) <input name="overrideip" <?=$SETTING['overrideip']?> type="checkbox"> 
+<br>Add a Name field to the reply box (for use on small forums): <input type="checkbox" name="namefield" <?=$SETTING['namefield']?>> (Override?) <input name="overridename" <?=$SETTING['overridename']?> type="checkbox"> 
+<br>Posts per page: <input name="postsperpage" value="<?=$SETTING['postsperpage']?>" size="5">
+<br>Threads displayed on front page: <input name="fpthreads" value="<?=$SETTING['fpthreads']?>" size="5">
+<br>Posts displayed on front page threads (not including first post): <input name="fpposts" value="<?=$SETTING['fpposts']?>" size="5">
+<br>Lines displayed on front page threads: <input name="fplines" value="<?=$SETTING['fplines']?>" size="5">
+<br>Additional threads linked in front page table: <input name="additionalthreads" value="<?=$SETTING['additionalthreads']?>" size="5">
 <input type="hidden" name="action" value="saveboardsettings">
 <input type="hidden" name="bbs" value="<?=$_GET[bbs]?>">
 <p><input type="submit" value="Save Settings">
 <h2>Settings it would be unwise to override</h2>
-Global forum name: <input name="forumname" value="<?=$SETTING[forumname]?>" size="50">
-<br>URL to forum: <input name="urltoforum" value="<?=$SETTING[urltoforum]?>" size="50">
+Global forum name: <input name="forumname" value="<?=$SETTING['forumname']?>" size="50">
+<br>URL to forum: <input name="urltoforum" value="<?=$SETTING['urltoforum']?>" size="50">
 </form>
 <?php exit; case "manage":
 if ($mylevel < 1000) fancydie("You don't have clearance for that.");
-$bbs = $_GET[bbs] or fancydie("no board?");
-$key = $_GET[tid] or fancydie("no thread?");
-$st = $_GET[st] or fancydie("no start?");
-$to = $_GET[ed] or fancydie("no end?");
+$bbs = $_GET['bbs'] or fancydie("no board?");
+$key = $_GET['tid'] or fancydie("no thread?");
+$st = $_GET['st'] or fancydie("no start?");
+$to = $_GET['ed'] or fancydie("no end?");
 // settings file
 $glob = file("globalsettings.txt") or fancydie("Eh? Couldn't fetch the global settings file?!");
 foreach ($glob as $tmp){  $tmp = trim($tmp);   list ($name, $value) = explode("=", $tmp);  $setting[$name] = $value;  }
@@ -669,8 +669,8 @@ for ($i = $st; $i <= $to; $i++) {
 echo "</table><a href='read.php/$bbs/$key/$st-$to'>Back to Thread</a>";
 exit; case "editsubj":
 if ($mylevel < 1000) fancydie("Fnord! You don't have clearance for that.");
-$bbs = $_GET[bbs] or fancydie("no board?");
-$key = $_GET[dat] or fancydie("no thread?");
+$bbs = $_GET['bbs'] or fancydie("no board?");
+$key = $_GET['dat'] or fancydie("no thread?");
 $glob = file("globalsettings.txt") or fancydie("Eh? Couldn't fetch the global settings file?!");
 foreach ($glob as $tmp){  $tmp = trim($tmp);   list ($name, $value) = explode("=", $tmp);  $setting[$name] = $value;  }
 $local = @file("$bbs/localsettings.txt");
@@ -690,9 +690,9 @@ Icon: <input name="icon" value="<?=$icon?>"><br>
 <?php
 exit; case "aborn":
 if ($mylevel < 1000) fancydie("Fnord! You don't have clearance for that.");
-$bbs = $_GET[bbs] or fancydie("no board?");
-$key = $_GET[dat] or fancydie("no thread?");
-$id = $_GET[id] or fancydie("no post?");
+$bbs = $_GET['bbs'] or fancydie("no board?");
+$key = $_GET['dat'] or fancydie("no thread?");
+$id = $_GET['id'] or fancydie("no post?");
 $glob = file("globalsettings.txt") or fancydie("Eh? Couldn't fetch the global settings file?!");
 foreach ($glob as $tmp){  $tmp = trim($tmp);   list ($name, $value) = explode("=", $tmp);  $setting[$name] = $value;  }
 $local = @file("$bbs/localsettings.txt");
@@ -713,15 +713,15 @@ With this message:
 <input type="hidden" name="dat" value="<?=$key?>">
 <input type="hidden" name="id" value="<?=$id?>">
 <input type="hidden" name="action" value="aborn">
-<input name="abornmesg" value="<?=$setting[aborn]?>">
+<input name="abornmesg" value="<?=$setting['aborn']?>">
 <input type="submit" value="Confirm!">
 </form>
 <?php
 exit; case "quietaborn":
 if ($mylevel < 1500) fancydie("Fnord! You don't have clearance for that.");
-$bbs = $_GET[bbs] or fancydie("no board?");
-$key = $_GET[dat] or fancydie("no thread?");
-$id = $_GET[id] or fancydie("no post?");
+$bbs = $_GET['bbs'] or fancydie("no board?");
+$key = $_GET['dat'] or fancydie("no thread?");
+$id = $_GET['id'] or fancydie("no post?");
 $glob = file("globalsettings.txt") or fancydie("Eh? Couldn't fetch the global settings file?!");
 foreach ($glob as $tmp){  $tmp = trim($tmp);   list ($name, $value) = explode("=", $tmp);  $setting[$name] = $value;  }
 $local = @file("$bbs/localsettings.txt");
@@ -747,9 +747,9 @@ list($name, $trip, $date, $message, $myid, $ip) = explode("<>", $thread[$id]);
 <?php
 exit; case "ban":
 if ($mylevel < 3000) fancydie("Fnord! You don't have clearance for that.");
-$bbs = $_GET[bbs] or fancydie("no board?");
-$key = $_GET[dat] or fancydie("no thread?");
-$id = $_GET[id] or fancydie("no post?");
+$bbs = $_GET['bbs'] or fancydie("no board?");
+$key = $_GET['dat'] or fancydie("no thread?");
+$id = $_GET['id'] or fancydie("no post?");
 $glob = file("globalsettings.txt") or fancydie("Eh? Couldn't fetch the global settings file?!");
 foreach ($glob as $tmp){  $tmp = trim($tmp);   list ($name, $value) = explode("=", $tmp);  $setting[$name] = $value;  }
 $local = @file("$bbs/localsettings.txt");
@@ -780,8 +780,8 @@ Private note: <input name="privres" value=""> (optional-- will only be visible t
 
 <?php exit; case "delthread":
 if ($mylevel < 2000) fancydie("Fnord! You don't have clearance for that.");
-$bbs = $_GET[bbs] or fancydie("no board?");
-$key = $_GET[dat] or fancydie("no thread?");
+$bbs = $_GET['bbs'] or fancydie("no board?");
+$key = $_GET['dat'] or fancydie("no thread?");
 ?><link rel="stylesheet" href="admin.css"><h1>Delete Confirmation</h1>
 Really delete this thread?
 <form action="admin.php" method="post"><p>
@@ -793,12 +793,12 @@ Really delete this thread?
 <?php exit; case "threadstop";
 chmod("$_GET[bbs]/dat/$_GET[dat].dat", 0440) or fancydie("couldn't chmod");
 ?>
-<meta http-equiv='refresh' content='0;admin.php?task=rebuild&bbs=<?=$_GET[bbs]?>'>
+<meta http-equiv='refresh' content='0;admin.php?task=rebuild&bbs=<?=$_GET['bbs']?>'>
 Thread was successfully stopped.
 <?php exit; case "unthreadstop";
 chmod("$_GET[bbs]/dat/$_GET[dat].dat", 0666) or fancydie("couldn't chmod");
 ?>
-<meta http-equiv='refresh' content='0;admin.php?task=rebuild&bbs=<?=$_GET[bbs]?>'>
+<meta http-equiv='refresh' content='0;admin.php?task=rebuild&bbs=<?=$_GET['bbs']?>'>
 Thread was successfully unstopped.
 <?php exit; case "managebans":
 if ($mylevel < 3000) fancydie("Fnord! You don't have clearance for that.");
@@ -815,13 +815,13 @@ else echo "<tr><td colspan='5'>NO BANS! HOORAY!</td></tr>";
 ?>
 </table>
 <?php exit; case "cleanup":
-if (!$_GET[bbs]) fancydie("no bbs?");
+if (!$_GET['bbs']) fancydie("no bbs?");
 if ($mylevel < 8000) fancydie("Fnord! You don't have clearance for that.");
 ?>
 <link rel="stylesheet" href="admin.css"><h1>Cleanup</h1><img src="logo.png">
 Don't mess with these!
-<ul><li><a href="admin.php?bbs=<?=$_GET[bbs]?>&task=confirmdel">Delete entire forum</a> (XXX)
-<li><a href="admin.php?bbs=<?=$_GET[bbs]?>&task=rebuildsubj">Rebuild subject.txt</a>
+<ul><li><a href="admin.php?bbs=<?=$_GET['bbs']?>&task=confirmdel">Delete entire forum</a> (XXX)
+<li><a href="admin.php?bbs=<?=$_GET['bbs']?>&task=rebuildsubj">Rebuild subject.txt</a>
 </ul>
 <?php exit; case "rebuildsubj":
 if ($mylevel < 8000) fancydie("Fnord! You don't have clearance for that.");
