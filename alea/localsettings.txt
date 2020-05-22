@@ -1,1 +1,1 @@
-boardname=Aleatório
+boardname=Aleat&#xF3;rio

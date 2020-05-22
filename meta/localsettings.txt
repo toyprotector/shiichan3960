@@ -1,1 +1,1 @@
-boardname=Administração
+boardname=Administra&#xE7;&#xE3;o
